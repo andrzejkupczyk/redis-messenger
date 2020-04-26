@@ -1,0 +1,26 @@
+{
+    "name": "andrzejkupczyk/redis-messenger",
+    "description": "Framework-agnostic Redis Streams client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrzej Kupczyk",
+            "email": "kontakt@andrzejkupczyk.pl",
+            "homepage": "https://andrzejkupczyk.pl"
+        }
+    ],
+    "require": {
+        "php": "^7.4",
+        "ext-redis": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "WebGarden\\Messaging\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
