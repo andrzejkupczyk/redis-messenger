@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": "^7.4",
-        "ext-redis": "*"
+        "ext-redis": "*",
+        "evenement/evenement": "^3.0"
     },
     "autoload": {
         "psr-4": {
