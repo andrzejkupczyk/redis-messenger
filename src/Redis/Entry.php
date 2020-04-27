@@ -4,7 +4,7 @@ namespace WebGarden\Messaging\Redis;
 
 class Entry
 {
-    private const AUTO_GENERATED_ID = '*';
+    protected const AUTO_GENERATED_ID = '*';
 
     protected string $id;
 

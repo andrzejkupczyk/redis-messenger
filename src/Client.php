@@ -3,6 +3,7 @@
 namespace WebGarden\Messaging;
 
 use Redis;
+use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 
 class Client
@@ -22,13 +23,18 @@ class Client
         $this->redis = $redis;
     }
 
-    public function to(Stream $stream): Writer
+    public function createGroup(Group $group): bool
     {
-        return new Writer($this->redis, $stream);
+        return $this->redis->xGroup('CREATE', $group->stream(), $group, $group->lastDeliveredId(), true);
     }
 
     public function from(Stream ...$streams): Reader
     {
         return new Reader($this->redis, $streams);
+    }
+
+    public function to(Stream $stream): Writer
+    {
+        return new Writer($this->redis, $stream);
     }
 }
