@@ -8,14 +8,14 @@ class Consumer
 
     protected Group $group;
 
-    private static function determineName(Group $group): string
+    private static function determineDefaultName(Group $group): string
     {
         return "{$group}_client";
     }
 
     public function __construct(Group $group, ?string $name = null)
     {
-        $this->name = $name ?: self::determineName($group);
+        $this->name = $name ?: static::determineDefaultName($group);
         $this->group = $group;
     }
 

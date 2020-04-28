@@ -1,0 +1,4 @@
+suites:
+  default:
+    namespace: WebGarden\Messaging
+    psr4_prefix: WebGarden\Messaging

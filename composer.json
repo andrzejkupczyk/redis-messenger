@@ -14,6 +14,9 @@
         "ext-redis": "*",
         "evenement/evenement": "^3.0"
     },
+    "require-dev": {
+        "phpspec/phpspec": "^6.1"
+    },
     "autoload": {
         "psr-4": {
             "WebGarden\\Messaging\\": "src/"
