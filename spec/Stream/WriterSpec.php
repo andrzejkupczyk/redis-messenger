@@ -24,7 +24,7 @@ class WriterSpec extends ObjectBehavior
         $this->shouldHaveType(Writer::class);
     }
 
-    function it_appends_entries_to_the_stream_and_returns_last_id(Redis $redis)
+    function it_returns_id_of_the_last_added_entry(Redis $redis)
     {
         $entry1 = new Entry('0-0', ['field' => 'value']);
         $entry2 = new Entry('1-0', ['field' => 'value']);

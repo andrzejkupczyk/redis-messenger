@@ -20,7 +20,7 @@ class Client
         return new self($redis);
     }
 
-    protected function __construct(Redis $redis)
+    public function __construct(Redis $redis)
     {
         $this->redis = $redis;
     }

@@ -39,7 +39,7 @@ class Reader implements SpecialIdentities
         return $this;
     }
 
-    public function followFrom(string $id = self::PENDING_MESSAGES, int $timeout = 0)
+    public function followFrom(string $id = self::PENDING_MESSAGES, int $timeout = 0): void
     {
         if (in_array($id, [self::NEW_MESSAGES, self::NEW_GROUP_MESSAGES])) {
             $this->followNewEntries($timeout);
