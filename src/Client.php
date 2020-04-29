@@ -5,6 +5,8 @@ namespace WebGarden\Messaging;
 use Redis;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
+use WebGarden\Messaging\Stream\Reader;
+use WebGarden\Messaging\Stream\Writer;
 
 class Client
 {

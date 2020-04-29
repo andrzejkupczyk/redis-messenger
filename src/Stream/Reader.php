@@ -1,6 +1,6 @@
 <?php
 
-namespace WebGarden\Messaging;
+namespace WebGarden\Messaging\Stream;
 
 use Evenement\EventEmitter;
 use Evenement\EventEmitterInterface;

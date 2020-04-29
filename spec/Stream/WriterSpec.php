@@ -1,13 +1,13 @@
 <?php
 
-namespace spec\WebGarden\Messaging;
+namespace spec\WebGarden\Messaging\Stream;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument as Arg;
 use Redis;
 use WebGarden\Messaging\Redis\Entry;
 use WebGarden\Messaging\Redis\Stream;
-use WebGarden\Messaging\Writer;
+use WebGarden\Messaging\Stream\Writer;
 
 class WriterSpec extends ObjectBehavior
 {

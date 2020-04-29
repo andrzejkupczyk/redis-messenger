@@ -3,7 +3,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use WebGarden\Messaging\Client;
-use WebGarden\Messaging\Reader;
+use WebGarden\Messaging\Stream\Reader;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Entry;
 use WebGarden\Messaging\Redis\Group;
