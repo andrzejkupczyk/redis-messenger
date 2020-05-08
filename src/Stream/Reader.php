@@ -21,15 +21,15 @@ class Reader implements SpecialIdentities
 
     protected Redis $redis;
 
-    protected EventEmitter $dispatcher;
+    protected EventEmitter $emitter;
 
     protected ?Consumer $consumer = null;
 
-    public function __construct(Redis $redis, array $streams, ?EventEmitterInterface $dispatcher = null)
+    public function __construct(Redis $redis, array $streams, ?EventEmitterInterface $emitter = null)
     {
         $this->redis = $redis;
         $this->streams = array_combine(array_map('strval', $streams), $streams);
-        $this->dispatcher = $dispatcher ?: new EventEmitter();
+        $this->emitter = $emitter ?: new EventEmitter();
     }
 
     public function as(Consumer $consumer): self
@@ -55,7 +55,7 @@ class Reader implements SpecialIdentities
 
     public function on($event, callable $listener): self
     {
-        $this->dispatcher->on($event, $listener);
+        $this->emitter->on($event, $listener);
 
         return $this;
     }
@@ -72,7 +72,7 @@ class Reader implements SpecialIdentities
             try {
                 $entries = $this->read($streams, $timeout);
             } catch (RedisException $exception) {
-                $this->dispatcher->emit(self::TIMEOUT_REACHED, [$currentTime() - $start]);
+                $this->emitter->emit(self::TIMEOUT_REACHED, [$currentTime() - $start]);
                 continue;
             }
 
@@ -86,7 +86,7 @@ class Reader implements SpecialIdentities
 
                 foreach ($streamEntries as $id => $values) {
                     $entry = new Entry($id, $values);
-                    $this->dispatcher->emit(self::ITEM_RECEIVED, [
+                    $this->emitter->emit(self::ITEM_RECEIVED, [
                         $entry,
                         $this->streams[$key],
                         $this->acknowledgeCallback($this->streams[$key], $entry),

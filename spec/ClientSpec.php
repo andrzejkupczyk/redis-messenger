@@ -24,7 +24,7 @@ class ClientSpec extends ObjectBehavior
         $this->shouldHaveType(Client::class);
     }
 
-    function it_crates_consumer_group(Redis $redis)
+    function it_creates_consumer_group(Redis $redis)
     {
         $stream = new Stream('stream');
         $group = new Group('group', $stream);

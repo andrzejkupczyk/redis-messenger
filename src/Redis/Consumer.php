@@ -4,18 +4,20 @@ namespace WebGarden\Messaging\Redis;
 
 class Consumer
 {
+    protected const DEFAULT_NAME = '%s_client';
+
     protected string $name;
 
     protected Group $group;
 
     private static function determineDefaultName(Group $group): string
     {
-        return "{$group}_client";
+        return sprintf(static::DEFAULT_NAME, $group);
     }
 
     public function __construct(Group $group, ?string $name = null)
     {
-        $this->name = $name ?: static::determineDefaultName($group);
+        $this->name = $name ?: self::determineDefaultName($group);
         $this->group = $group;
     }
 

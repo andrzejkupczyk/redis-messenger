@@ -17,7 +17,7 @@ class Client
         $redis = new Redis();
         $redis->connect($host);
 
-        return new self($redis);
+        return new static($redis);
     }
 
     public function __construct(Redis $redis)
