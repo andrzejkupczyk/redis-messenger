@@ -35,4 +35,14 @@ class Consumer
     {
         return $this->group;
     }
+
+    public function stream(): Stream
+    {
+        return $this->group->stream();
+    }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
 }

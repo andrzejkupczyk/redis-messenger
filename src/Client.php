@@ -5,13 +5,14 @@ namespace WebGarden\Messaging;
 use Redis;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
+use WebGarden\Messaging\Redis\IdsRange;
 use WebGarden\Messaging\Redis\Stream;
 use WebGarden\Messaging\Stream\Reader;
 use WebGarden\Messaging\Stream\Writer;
 
 class Client
 {
-    private Redis $redis;
+    protected Redis $redis;
 
     public static function connect(string $host)
     {
@@ -26,12 +27,29 @@ class Client
         $this->redis = $redis;
     }
 
+    public function from(Stream ...$streams): Reader
+    {
+        return new Reader($this->redis, $streams);
+    }
+
+    public function to(Stream $stream): Writer
+    {
+        return new Writer($this->redis, $stream);
+    }
+
+    /**
+     * Create a new consumer group associated with a stream.
+     *
+     * @return bool Whether or not the group has been created
+     */
     public function createGroup(Group $group): bool
     {
         return $this->redis->xGroup('CREATE', $group->stream(), $group, $group->lastDeliveredId(), true);
     }
 
     /**
+     * Remove a specific consumer from a consumer group.
+     *
      * @return int The number of pending messages that the consumer had before it was deleted
      */
     public function removeConsumer(Consumer $consumer): int
@@ -41,13 +59,21 @@ class Client
         return $this->redis->xGroup('DELCONSUMER', ...$arguments);
     }
 
-    public function from(Stream ...$streams): Reader
+    public function pending(Group $group, ?IdsRange $range = null, ?int $count = null): array
     {
-        return new Reader($this->redis, $streams);
+        $range = $range ?: new IdsRange();
+
+        return $this->redis->xPending(
+            $group->stream(), $group, $range->from(), $range->to(), $count
+        );
     }
 
-    public function to(Stream $stream): Writer
+    public function pendingFor(Consumer $consumer, ?IdsRange $range = null, ?int $count = null): array
     {
-        return new Writer($this->redis, $stream);
+        $range = $range ?: new IdsRange();
+
+        return $this->redis->xPending(
+            $consumer->stream(), $consumer->group(), $range->from(), $range->to(), $count, $consumer
+        );
     }
 }

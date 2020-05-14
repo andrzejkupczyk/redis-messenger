@@ -5,6 +5,7 @@ namespace spec\WebGarden\Messaging\Redis;
 use PhpSpec\ObjectBehavior;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
+use WebGarden\Messaging\Redis\Stream;
 
 class ConsumerSpec extends ObjectBehavior
 {
@@ -29,5 +30,21 @@ class ConsumerSpec extends ObjectBehavior
         $this->beConstructedWith($group);
 
         $this->name()->shouldBe('group_name_client');
+    }
+
+    function it_returns_the_stream_with_which_the_group_is_associated()
+    {
+        $stream = new Stream('stream');
+
+        $this->beConstructedWith(new Group('group', $stream));
+
+        $this->stream()->shouldBe($stream);
+    }
+
+    function it_has_a_string_representation(Group $group)
+    {
+        $this->beConstructedWith($group, 'consumer_name');
+
+        $this->__toString()->shouldBe('consumer_name');
     }
 }
