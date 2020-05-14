@@ -15,6 +15,11 @@ class Consumer
         return sprintf(static::DEFAULT_NAME, $group);
     }
 
+    public static function fromNative(string $stream, string $group, ?string $name = null)
+    {
+        return new static(new Group($group, new Stream($stream)), $name);
+    }
+
     public function __construct(Group $group, ?string $name = null)
     {
         $this->name = $name ?: self::determineDefaultName($group);

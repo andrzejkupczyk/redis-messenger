@@ -3,6 +3,7 @@
 namespace WebGarden\Messaging;
 
 use Redis;
+use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 use WebGarden\Messaging\Stream\Reader;
@@ -28,6 +29,16 @@ class Client
     public function createGroup(Group $group): bool
     {
         return $this->redis->xGroup('CREATE', $group->stream(), $group, $group->lastDeliveredId(), true);
+    }
+
+    /**
+     * @return int The number of pending messages that the consumer had before it was deleted
+     */
+    public function removeConsumer(Consumer $consumer): int
+    {
+        $arguments = [$consumer->group()->stream(), $consumer->group(), $consumer->name()];
+
+        return $this->redis->xGroup('DELCONSUMER', ...$arguments);
     }
 
     public function from(Stream ...$streams): Reader

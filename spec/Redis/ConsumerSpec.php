@@ -15,6 +15,13 @@ class ConsumerSpec extends ObjectBehavior
         $this->shouldHaveType(Consumer::class);
     }
 
+    function it_is_initializable_using_native_values()
+    {
+        $this->beConstructedThrough('fromNative', ['stream_name', 'group_name', 'consumer_name']);
+
+        $this->shouldHaveType(Consumer::class);
+    }
+
     function it_gives_itself_a_default_name_when_none_provided(Group $group)
     {
         $group->__toString()->willReturn('group_name');

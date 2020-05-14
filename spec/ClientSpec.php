@@ -5,6 +5,7 @@ namespace spec\WebGarden\Messaging;
 use PhpSpec\ObjectBehavior;
 use Redis;
 use WebGarden\Messaging\Client;
+use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 
@@ -32,5 +33,16 @@ class ClientSpec extends ObjectBehavior
 
         $this->beConstructedWith($redis);
         $this->createGroup($group)->shouldBe(true);
+    }
+
+    function it_removes_consumer_from_a_group(Redis $redis)
+    {
+        $stream = new Stream('stream');
+        $group = new Group('group', $stream);
+        $consumer = new Consumer($group, 'consumer');
+        $redis->xGroup('DELCONSUMER', $stream, $group, 'consumer')->willReturn(0);
+
+        $this->beConstructedWith($redis);
+        $this->removeConsumer($consumer)->shouldBe(0);
     }
 }
