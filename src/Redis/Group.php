@@ -10,6 +10,11 @@ class Group implements SpecialIdentities
 
     protected string $lastDeliveredId;
 
+    public static function fromNative(string $name, string $streamName)
+    {
+        return new static($name, new Stream($streamName));
+    }
+
     public function __construct(string $name, Stream $stream)
     {
         $this->name = $name;

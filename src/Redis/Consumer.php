@@ -17,7 +17,7 @@ class Consumer
 
     public static function fromNative(string $stream, string $group, ?string $name = null)
     {
-        return new static(new Group($group, new Stream($stream)), $name);
+        return new static(Group::fromNative($group, $stream), $name);
     }
 
     public function __construct(Group $group, ?string $name = null)

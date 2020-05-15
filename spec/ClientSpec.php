@@ -7,6 +7,7 @@ use Redis;
 use WebGarden\Messaging\Client;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
+use WebGarden\Messaging\Redis\IdsRange;
 use WebGarden\Messaging\Redis\Stream;
 
 class ClientSpec extends ObjectBehavior
@@ -44,5 +45,45 @@ class ClientSpec extends ObjectBehavior
 
         $this->beConstructedWith($redis);
         $this->removeConsumer($consumer)->shouldBe(0);
+    }
+
+    function it_returns_pending_messages_overview(Redis $redis)
+    {
+        $group = Group::fromNative('group', 'stream');
+        $redis->xPending('stream', 'group')->willReturn([]);
+
+        $this->beConstructedWith($redis);
+        $this->pendingFor($group)->shouldBeArray();
+    }
+
+    function it_ignores_limit_if_range_is_missing(Redis $redis)
+    {
+        $group = Group::fromNative('group', 'stream');
+        $redis->xPending('stream', 'group')->willReturn([]);
+
+        $this->beConstructedWith($redis);
+        $this->pendingFor($group, null, 10)->shouldBeArray();
+    }
+
+    function it_returns_all_messages(Redis $redis)
+    {
+        $group = Group::fromNative('group', 'stream');
+        $range = IdsRange::fromDefaults();
+        $amount = 10;
+        $redis->xPending('stream', 'group', '-', '+', 10)->willReturn([]);
+
+        $this->beConstructedWith($redis);
+        $this->pendingFor($group, $range, $amount)->shouldBeArray();
+    }
+
+    function it_returns_pending_messages_owned_by_specified_consumer(Redis $redis)
+    {
+        $consumer = Consumer::fromNative('stream', 'group', 'name');
+        $range = IdsRange::fromDefaults();
+        $amount = 10;
+        $redis->xPending('stream', 'group', '-', '+', 10, 'name')->willReturn([]);
+
+        $this->beConstructedWith($redis);
+        $this->pendingOwnedBy($consumer, $range, $amount)->shouldBeArray();
     }
 }

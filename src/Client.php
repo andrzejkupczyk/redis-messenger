@@ -3,9 +3,6 @@
 namespace WebGarden\Messaging;
 
 use Redis;
-use WebGarden\Messaging\Redis\Consumer;
-use WebGarden\Messaging\Redis\Group;
-use WebGarden\Messaging\Redis\IdsRange;
 use WebGarden\Messaging\Redis\Stream;
 use WebGarden\Messaging\Stream\Reader;
 use WebGarden\Messaging\Stream\Writer;
@@ -13,6 +10,7 @@ use WebGarden\Messaging\Stream\Writer;
 class Client
 {
     use GroupManagement;
+    use PendingEntries;
 
     protected Redis $redis;
 
@@ -37,26 +35,5 @@ class Client
     public function to(Stream $stream): Writer
     {
         return new Writer($this->redis, $stream);
-    }
-
-    public function pending(Group $group, ?IdsRange $range = null, ?int $count = null): array
-    {
-        $range = $range ?: new IdsRange();
-
-        return $this->redis->xPending($group->stream(), $group, $range->from(), $range->to(), $count);
-    }
-
-    public function pendingFor(Consumer $consumer, ?IdsRange $range = null, ?int $count = null): array
-    {
-        $range = $range ?: new IdsRange();
-
-        return $this->redis->xPending(
-            $consumer->stream(),
-            $consumer->group(),
-            $range->from(),
-            $range->to(),
-            $count,
-            $consumer
-        );
     }
 }
