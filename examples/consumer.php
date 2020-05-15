@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -10,7 +10,7 @@ use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 
 $streamNames = explode(',', $argv[1] ?? 'stream');
-$from = $argv[2] ?? 0;
+$from = $argv[2] ?? '0';
 
 $client = Client::connect('redis');
 $streams = array_map(function ($name) {

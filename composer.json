@@ -22,6 +22,9 @@
             "WebGarden\\Messaging\\": "src/"
         }
     },
+    "scripts": {
+        "cs:fix": "@php ./tools/php-cs-fixer fix"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"

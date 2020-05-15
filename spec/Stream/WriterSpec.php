@@ -11,10 +11,10 @@ use WebGarden\Messaging\Stream\Writer;
 
 class WriterSpec extends ObjectBehavior
 {
-    function let(Redis $redis, Stream $stream)
+    function let(Redis $redis)
     {
-        $redis->xAdd(Arg::type(Stream::class), Arg::type('string'), Arg::type('array'))
-            ->willReturnArgument(1);
+        $stream = new Stream('stream');
+        $redis->xAdd($stream->name(), Arg::type('string'), Arg::type('array'))->willReturnArgument(1);
 
         $this->beConstructedWith($redis, $stream);
     }

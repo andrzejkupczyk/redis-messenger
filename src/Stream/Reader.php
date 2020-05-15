@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace WebGarden\Messaging\Stream;
 
@@ -64,7 +64,7 @@ class Reader implements SpecialIdentities
     {
         $names = array_keys($this->streams);
         $streams = array_fill_keys($names, $from ?: $this->determineSpecialId());
-        $currentTime = fn() => hrtime(true);
+        $currentTime = fn () => hrtime(true);
 
         while (true) {
             $start = $currentTime();
@@ -99,11 +99,15 @@ class Reader implements SpecialIdentities
     private function acknowledgeCallback(Stream $stream, Entry $entry): callable
     {
         if (!$this->onBehalfOfConsumer()) {
-            return fn() => false;
+            return fn () => false;
         }
 
         return function () use ($stream, $entry): bool {
-            return (bool) $this->redis->xAck($stream, $this->consumer->group(), [$entry->id()]);
+            return (bool) $this->redis->xAck(
+                $stream->name(),
+                $this->consumer->group()->name(),
+                [$entry->id()]
+            );
         };
     }
 
@@ -117,14 +121,14 @@ class Reader implements SpecialIdentities
         return $this->onBehalfOfConsumer() ? self::NEW_GROUP_MESSAGES : self::NEW_MESSAGES;
     }
 
-    private function read(array $streams, $timeout, ?int $count = null): array
+    private function read(array $streams, $timeout, int $count = 0): array
     {
         if (!$this->onBehalfOfConsumer()) {
             return $this->redis->xRead($streams, $count, $timeout);
         }
 
         return $this->redis->xReadGroup(
-            $this->consumer->group(),
+            $this->consumer->group()->name(),
             $this->consumer->name(),
             $streams,
             $count,

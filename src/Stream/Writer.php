@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace WebGarden\Messaging\Stream;
 
@@ -23,7 +23,7 @@ class Writer
         $lastEntryId = null;
 
         foreach ($entries as $entry) {
-            $lastEntryId = $this->redis->xAdd($this->stream, $entry->id(), $entry->values());
+            $lastEntryId = $this->redis->xAdd($this->stream->name(), $entry->id(), $entry->values());
         }
 
         return $lastEntryId;
