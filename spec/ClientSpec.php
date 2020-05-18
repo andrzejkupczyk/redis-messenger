@@ -31,9 +31,11 @@ class ClientSpec extends ObjectBehavior
         $stream = new Stream('stream');
         $group = new Group('group', $stream);
         $redis->xGroup('CREATE', $stream, $group, '$', true)->willReturn(true);
-
         $this->beConstructedWith($redis);
-        $this->createGroup($group)->shouldBe(true);
+
+        $result = $this->createGroup($group);
+
+        $result->shouldBe(true);
     }
 
     function it_removes_consumer_from_a_group(Redis $redis)
@@ -42,27 +44,33 @@ class ClientSpec extends ObjectBehavior
         $group = new Group('group', $stream);
         $consumer = new Consumer($group, 'consumer');
         $redis->xGroup('DELCONSUMER', $stream, $group, 'consumer')->willReturn(0);
-
         $this->beConstructedWith($redis);
-        $this->removeConsumer($consumer)->shouldBe(0);
+
+        $result = $this->removeConsumer($consumer);
+
+        $result->shouldBe(0);
     }
 
     function it_returns_pending_messages_overview(Redis $redis)
     {
         $group = Group::fromNative('group', 'stream');
         $redis->xPending('stream', 'group')->willReturn([]);
-
         $this->beConstructedWith($redis);
-        $this->pendingFor($group)->shouldBeArray();
+
+        $result = $this->pendingFor($group);
+
+        $result->shouldBeArray();
     }
 
     function it_ignores_limit_if_range_is_missing(Redis $redis)
     {
         $group = Group::fromNative('group', 'stream');
         $redis->xPending('stream', 'group')->willReturn([]);
-
         $this->beConstructedWith($redis);
-        $this->pendingFor($group, null, 10)->shouldBeArray();
+
+        $result = $this->pendingFor($group, null, 10);
+
+        $result->shouldBeArray();
     }
 
     function it_returns_all_messages(Redis $redis)
@@ -71,9 +79,11 @@ class ClientSpec extends ObjectBehavior
         $range = IdsRange::fromDefaults();
         $amount = 10;
         $redis->xPending('stream', 'group', '-', '+', 10)->willReturn([]);
-
         $this->beConstructedWith($redis);
-        $this->pendingFor($group, $range, $amount)->shouldBeArray();
+
+        $result = $this->pendingFor($group, $range, $amount);
+
+        $result->shouldBeArray();
     }
 
     function it_returns_pending_messages_owned_by_specified_consumer(Redis $redis)
@@ -82,8 +92,10 @@ class ClientSpec extends ObjectBehavior
         $range = IdsRange::fromDefaults();
         $amount = 10;
         $redis->xPending('stream', 'group', '-', '+', 10, 'name')->willReturn([]);
-
         $this->beConstructedWith($redis);
-        $this->pendingOwnedBy($consumer, $range, $amount)->shouldBeArray();
+
+        $result = $this->pendingOwnedBy($consumer, $range, $amount);
+
+        $result->shouldBeArray();
     }
 }

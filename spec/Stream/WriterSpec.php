@@ -30,7 +30,9 @@ class WriterSpec extends ObjectBehavior
         $entry2 = new Entry('1-0', ['field' => 'value']);
         $entry3 = new Entry('2-0', ['field' => 'value']);
 
-        $this->add($entry1, $entry2, $entry3)->shouldBe('2-0');
+        $result = $this->add($entry1, $entry2, $entry3);
+
+        $result->shouldBe('2-0');
         $redis->xAdd(Arg::any(), Arg::any(), Arg::any())->shouldHaveBeenCalledTimes(3);
     }
 }
