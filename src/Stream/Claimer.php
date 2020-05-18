@@ -7,6 +7,9 @@ use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\IdsRange;
 
+/**
+ * Supports Pending Entry Lists (PEL) management.
+ */
 class Claimer
 {
     protected const DEFAULT_MIN_IDLE_TIME = 0;
@@ -23,6 +26,8 @@ class Claimer
     }
 
     /**
+     * Change the ownership of a pending messages.
+     *
      * @param string[] $ids
      * @param Consumer|string $newOwner
      */
@@ -41,6 +46,9 @@ class Claimer
         );
     }
 
+    /**
+     * Inspect the list of pending messages.
+     */
     public function pending(?IdsRange $range = null, int $limit = self::DEFAULT_PENDING_TIME_LIMIT): array
     {
         $arguments = [$this->group->stream()->name(), $this->group->name()];
@@ -53,6 +61,8 @@ class Claimer
     }
 
     /**
+     * Inspect the list of pending messages owned by the given consumer.
+     *
      * @param Consumer|string $consumer
      */
     public function pendingOwnedBy($consumer, IdsRange $range, int $limit = self::DEFAULT_PENDING_TIME_LIMIT): array
