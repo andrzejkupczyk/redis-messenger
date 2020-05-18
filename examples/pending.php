@@ -12,14 +12,14 @@ $client = Client::connect('redis');
 $group = Group::fromNative($argv[2] ?? 'group', $argv[1] ?? 'stream');
 
 // 1. Overview (the simple XPENDING form)
-$result = $client->pendingFor($group);
+$result = $client->for($group)->pending();
 var_dump($result);
 
 // 2. All the pending messages (the extended XPENDING form)
-$result = $client->pendingFor($group, IdsRange::fromDefaults(), 10);
+$result = $client->for($group)->pending(IdsRange::fromDefaults(), 10);
 var_dump($result);
 
 // 3. Messages having a specific owner
 $consumer = new Consumer($group);
-$result = $client->pendingOwnedBy($consumer, IdsRange::fromDefaults(), 10);
+$result = $client->for($group)->pendingOwnedBy($consumer, IdsRange::fromDefaults(), 10);
 var_dump($result);

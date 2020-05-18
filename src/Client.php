@@ -12,7 +12,6 @@ use WebGarden\Messaging\Stream\Writer;
 class Client
 {
     use GroupManagement;
-    use PendingEntries;
 
     protected Redis $redis;
 

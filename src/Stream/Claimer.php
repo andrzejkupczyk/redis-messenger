@@ -5,18 +5,16 @@ namespace WebGarden\Messaging\Stream;
 use Redis;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
+use WebGarden\Messaging\Redis\IdsRange;
 
 class Claimer
 {
     protected const DEFAULT_MIN_IDLE_TIME = 0;
+    protected const DEFAULT_PENDING_TIME_LIMIT = 1;
 
     protected Redis $redis;
 
     protected Group $group;
-
-    protected array $ids = [];
-
-    protected int $minIdleTime = self::DEFAULT_MIN_IDLE_TIME;
 
     public function __construct(Redis $redis, Group $group)
     {
@@ -25,28 +23,47 @@ class Claimer
     }
 
     /**
-     * @param Consumer|string $consumer
+     * @param string[] $ids
+     * @param Consumer|string $newOwner
      */
-    public function assignTo($consumer): array
+    public function reassignMessages(array $ids, $newOwner, int $minIdleTime = self::DEFAULT_MIN_IDLE_TIME): array
     {
-        if (empty($this->ids)) {
+        if (empty($ids)) {
             return [];
         }
 
         return $this->redis->xClaim(
             $this->group->stream()->name(),
             $this->group->name(),
-            (string) $consumer,
-            $this->minIdleTime,
-            $this->ids
+            (string) $newOwner,
+            $minIdleTime,
+            $ids
         );
     }
 
-    public function messages(array $ids, int $minIdleTime = self::DEFAULT_MIN_IDLE_TIME): self
+    public function pending(?IdsRange $range = null, int $limit = self::DEFAULT_PENDING_TIME_LIMIT): array
     {
-        $this->ids = $ids;
-        $this->minIdleTime = $minIdleTime;
+        $arguments = [$this->group->stream()->name(), $this->group->name()];
 
-        return $this;
+        if ($range) {
+            array_push($arguments, $range->from(), $range->to(), $limit);
+        }
+
+        return $this->redis->xPending(...$arguments);
+    }
+
+    /**
+     * @param Consumer|string $consumer
+     */
+    public function pendingOwnedBy($consumer, IdsRange $range, int $limit = self::DEFAULT_PENDING_TIME_LIMIT): array
+    {
+        return $this->redis->xPending(
+            $this->group->stream()->name(),
+            $this->group->name(),
+            $range->from(),
+            $range->to(),
+            $limit,
+            (string) $consumer,
+        );
     }
 }
