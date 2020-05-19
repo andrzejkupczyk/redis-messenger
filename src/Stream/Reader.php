@@ -63,10 +63,11 @@ class Reader implements SpecialIdentities
     protected function follow(string $from, int $timeout = 0): void
     {
         $names = array_keys($this->streams);
-        $streams = array_fill_keys($names, $from ?: $this->determineSpecialId());
+        $streams = array_fill_keys($names, $from);
         $currentTime = fn () => hrtime(true);
+        $finiteLoop = defined('TEST_MODE') && TEST_MODE;
 
-        while (true) {
+        do {
             $start = $currentTime();
 
             try {
@@ -93,7 +94,7 @@ class Reader implements SpecialIdentities
                     ]);
                 }
             }
-        }
+        } while (!$finiteLoop);
     }
 
     private function acknowledgeCallback(Stream $stream, Entry $entry): callable

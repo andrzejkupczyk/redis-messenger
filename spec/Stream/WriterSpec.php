@@ -33,6 +33,6 @@ class WriterSpec extends ObjectBehavior
         $result = $this->add($entry1, $entry2, $entry3);
 
         $result->shouldBe('2-0');
-        $redis->xAdd(Arg::any(), Arg::any(), Arg::any())->shouldHaveBeenCalledTimes(3);
+        $redis->xAdd(Arg::cetera())->shouldHaveBeenCalledTimes(3);
     }
 }

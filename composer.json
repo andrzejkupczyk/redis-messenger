@@ -15,7 +15,8 @@
         "evenement/evenement": "^3.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^6.1"
+        "phpspec/phpspec": "^6.1",
+        "friends-of-phpspec/phpspec-code-coverage": "^4.3"
     },
     "autoload": {
         "psr-4": {
@@ -23,7 +24,8 @@
         }
     },
     "scripts": {
-        "cs:fix": "@php ./tools/php-cs-fixer fix"
+        "cs:fix": "@php ./tools/php-cs-fixer fix",
+        "test": "phpspec run --bootstrap spec/bootstrap.php"
     },
     "extra": {
         "branch-alias": {

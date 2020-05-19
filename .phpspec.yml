@@ -2,3 +2,5 @@ suites:
   default:
     namespace: WebGarden\Messaging
     psr4_prefix: WebGarden\Messaging
+extensions:
+  FriendsOfPhpSpec\PhpSpec\CodeCoverage\CodeCoverageExtension: ~
