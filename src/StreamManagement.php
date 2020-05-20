@@ -6,7 +6,7 @@ use Redis;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 
-trait StreamIntrospection
+trait StreamManagement
 {
     protected Redis $redis;
 
@@ -38,5 +38,15 @@ trait StreamIntrospection
     public function numberOfEntries(Stream $stream): int
     {
         return $this->redis->xLen($stream->name());
+    }
+
+    /**
+     * @see https://redis.io/commands/xtrim
+     *
+     * @return int The number of entries deleted from the stream
+     */
+    public function trimStream(Stream $stream, int $maxLength): int
+    {
+        return $this->redis->xTrim($stream->name(), $maxLength, true);
     }
 }

@@ -112,4 +112,16 @@ class ClientSpec extends ObjectBehavior
         $redis->xLen('name')->shouldHaveBeenCalled();
         $result->shouldBeInt();
     }
+
+    function it_trims_the_stream_to_the_approximate_number_of_items(Redis $redis)
+    {
+        $stream = new Stream('name');
+        $redis->xTrim(Argument::cetera())->willReturn(0);
+        $this->beConstructedWith($redis);
+
+        $result = $this->trimStream($stream, 10);
+
+        $redis->xTrim('name', 10, true)->shouldHaveBeenCalled();
+        $result->shouldBeInt();
+    }
 }

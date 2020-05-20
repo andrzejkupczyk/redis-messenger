@@ -15,16 +15,19 @@ $client->to($stream)->add(Entry::compose(['foo' => 'bar']));
 $client->createGroup($group);
 
 // 1. General information about the stream
-print_r($client->generalInformation($stream));
+var_dump($client->generalInformation($stream));
 
 // 2. Entire state of the stream
-print_r($client->fullInformation($stream));
+var_dump($client->fullInformation($stream));
 
 // 3. All the consumer groups associated with the stream
-print_r($client->groups($stream));
+var_dump($client->groups($stream));
 
 // 4. List of every consumer in a specific consumer group
-print_r($client->consumers($group));
+var_dump($client->consumers($group));
 
 // 5. Number of entries inside a stream
-print_r($client->numberOfEntries($stream));
+var_dump($client->numberOfEntries($stream));
+
+// 6. Trimming the stream to a given number of items
+var_dump($client->trimStream($stream, 10));
