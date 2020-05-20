@@ -100,4 +100,16 @@ class ClientSpec extends ObjectBehavior
         $redis->xInfo('CONSUMERS', 'stream', 'group')->shouldHaveBeenCalled();
         $result->shouldBeArray();
     }
+
+    function it_returns_the_number_of_entries_inside_a_stream(Redis $redis)
+    {
+        $stream = new Stream('name');
+        $redis->xLen(Argument::cetera())->willReturn(0);
+        $this->beConstructedWith($redis);
+
+        $result = $this->numberOfEntries($stream);
+
+        $redis->xLen('name')->shouldHaveBeenCalled();
+        $result->shouldBeInt();
+    }
 }

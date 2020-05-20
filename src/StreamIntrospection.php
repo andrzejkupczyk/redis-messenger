@@ -31,4 +31,12 @@ trait StreamIntrospection
     {
         return $this->redis->xInfo('GROUPS', $stream->name());
     }
+
+    /**
+     * @see https://redis.io/commands/xlen
+     */
+    public function numberOfEntries(Stream $stream): int
+    {
+        return $this->redis->xLen($stream->name());
+    }
 }

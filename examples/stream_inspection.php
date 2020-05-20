@@ -25,3 +25,6 @@ print_r($client->groups($stream));
 
 // 4. List of every consumer in a specific consumer group
 print_r($client->consumers($group));
+
+// 5. Number of entries inside a stream
+print_r($client->numberOfEntries($stream));
