@@ -16,10 +16,10 @@ $result = $client->for($group)->pending();
 var_dump($result);
 
 // 2. All the pending messages (the extended XPENDING form)
-$result = $client->for($group)->pending(IdsRange::fromDefaults(), 10);
+$result = $client->for($group)->pending(IdsRange::forEveryEntry(), 10);
 var_dump($result);
 
 // 3. Messages having a specific owner
 $consumer = new Consumer($group);
-$result = $client->for($group)->pendingOwnedBy($consumer, IdsRange::fromDefaults(), 10);
+$result = $client->for($group)->pendingOwnedBy($consumer, IdsRange::forEveryEntry(), 10);
 var_dump($result);

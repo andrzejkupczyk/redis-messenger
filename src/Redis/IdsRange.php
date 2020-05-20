@@ -8,9 +8,14 @@ class IdsRange implements SpecialIdentities
 
     protected string $to;
 
-    public static function fromDefaults()
+    public static function forEveryEntry()
     {
         return new self(self::MIN_ID_POSSIBLE, self::MAX_ID_POSSIBLE);
+    }
+
+    public static function forSingleEntry(string $id)
+    {
+        return new self($id, $id);
     }
 
     public function __construct(string $from, string $to)

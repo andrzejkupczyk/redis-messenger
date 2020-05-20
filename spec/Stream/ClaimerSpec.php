@@ -43,7 +43,7 @@ class ClaimerSpec extends ObjectBehavior
     function it_returns_all_messages(Redis $redis)
     {
         $group = Group::fromNative('group', 'stream');
-        $range = IdsRange::fromDefaults();
+        $range = IdsRange::forEveryEntry();
         $amount = 10;
         $redis->xPending('stream', 'group', '-', '+', 10)->willReturn([]);
         $this->beConstructedWith($redis, $group);
@@ -56,7 +56,7 @@ class ClaimerSpec extends ObjectBehavior
     function it_returns_pending_messages_owned_by_specified_consumer(Redis $redis)
     {
         $group = Group::fromNative('group', 'stream');
-        $range = IdsRange::fromDefaults();
+        $range = IdsRange::forEveryEntry();
         $amount = 10;
         $redis->xPending('stream', 'group', '-', '+', 10, 'consumer')->willReturn([]);
         $this->beConstructedWith($redis, $group);

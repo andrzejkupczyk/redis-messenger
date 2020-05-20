@@ -8,6 +8,7 @@ use Redis;
 use RedisException;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Entry;
+use WebGarden\Messaging\Redis\IdsRange;
 use WebGarden\Messaging\Redis\SpecialIdentities;
 use WebGarden\Messaging\Redis\Stream;
 
@@ -37,6 +38,18 @@ class Reader implements SpecialIdentities
         $this->consumer = $consumer;
 
         return $this;
+    }
+
+    /**
+     * @see https://redis.io/commands/xrange
+     *
+     * @param int|null $limit Use to reduce the number of entries reported
+     */
+    public function readRange(IdsRange $range, ?int $limit = null): array
+    {
+        $stream = array_key_first($this->streams);
+
+        return $this->redis->xRange($stream, $range->from(), $range->to(), $limit);
     }
 
     public function followFrom(string $id = self::PENDING_MESSAGES, int $timeout = 0): void

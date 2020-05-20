@@ -6,7 +6,7 @@ use Evenement\EventEmitter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Redis;
-use WebGarden\Messaging\Redis\{Consumer, Entry, Stream};
+use WebGarden\Messaging\Redis\{Consumer, Entry, IdsRange, Stream};
 use WebGarden\Messaging\Stream\Reader;
 
 class ReaderSpec extends ObjectBehavior
@@ -97,5 +97,17 @@ class ReaderSpec extends ObjectBehavior
                 && $argument[1] instanceof Stream
                 && is_callable($argument[2]);
         }))->shouldHaveBeenCalledTimes(2);
+    }
+
+    function it_reads_stream_entries_matching_given_range_of_ids(Redis $redis)
+    {
+        $redis->xRange(Argument::cetera())->willReturn([]);
+        $this->beConstructedWith($redis, [new Stream('first_stream'), new Stream('second_stream')]);
+
+        $result = $this->readRange(new IdsRange('-', '+'), 2);
+
+        $result->shouldBeArray();
+        $redis->xRange('first_stream', '-', '+', 2)->shouldHaveBeenCalled();
+        $redis->xRange('second_stream', '-', '+', 2)->shouldNotHaveBeenCalled();
     }
 }
