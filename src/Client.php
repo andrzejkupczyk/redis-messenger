@@ -12,6 +12,7 @@ use WebGarden\Messaging\Stream\Writer;
 class Client
 {
     use GroupManagement;
+    use StreamIntrospection;
 
     protected Redis $redis;
 
