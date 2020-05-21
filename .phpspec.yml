@@ -3,4 +3,10 @@ suites:
     namespace: WebGarden\Messaging
     psr4_prefix: WebGarden\Messaging
 extensions:
-  FriendsOfPhpSpec\PhpSpec\CodeCoverage\CodeCoverageExtension: ~
+  FriendsOfPhpSpec\PhpSpec\CodeCoverage\CodeCoverageExtension:
+    format:
+      - html
+      - clover
+    output:
+      html: coverage
+      clover: coverage/coverage.xml

@@ -25,7 +25,8 @@
     },
     "scripts": {
         "cs:fix": "@php ./tools/php-cs-fixer fix",
-        "test": "phpspec run --bootstrap spec/bootstrap.php"
+        "test": "phpspec run --bootstrap spec/bootstrap.php --no-coverage",
+        "coverage": "phpspec run --bootstrap spec/bootstrap.php"
     },
     "extra": {
         "branch-alias": {

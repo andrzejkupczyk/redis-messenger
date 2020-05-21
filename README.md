@@ -7,7 +7,7 @@ Framework-agnostic Redis Streams client.
 ## Examples of use
 
 This package aims to support all [Redis Streams commands](https://redis.io/commands#stream) that are available. 
-Examples listed below illustrate only the simplest use cases, but [more examples](https://github.com/andrzejkupczyk/redis-messenger/tree/master/examples) are provided.
+Examples listed below illustrates only the simplest use cases, but [more examples](https://github.com/andrzejkupczyk/redis-messenger/tree/master/examples) are provided.
 
 ### Publishing messages
 ```php
