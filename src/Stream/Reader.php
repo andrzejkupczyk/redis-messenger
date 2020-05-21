@@ -52,6 +52,18 @@ class Reader implements SpecialIdentities
         return $this->redis->xRange($stream, $range->from(), $range->to(), $limit);
     }
 
+    /**
+     * @see https://redis.io/commands/xrevrange
+     *
+     * @param int|null $limit Use to reduce the number of entries reported
+     */
+    public function readReversedRange(IdsRange $range, ?int $limit = null): array
+    {
+        $stream = array_key_first($this->streams);
+
+        return $this->redis->xRevRange($stream, $range->to(), $range->from(), $limit);
+    }
+
     public function followFrom(string $id = self::PENDING_MESSAGES, int $timeout = 0): void
     {
         if (in_array($id, [self::NEW_MESSAGES, self::NEW_GROUP_MESSAGES])) {

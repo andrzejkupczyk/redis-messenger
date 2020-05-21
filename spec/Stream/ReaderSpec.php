@@ -110,4 +110,16 @@ class ReaderSpec extends ObjectBehavior
         $redis->xRange('first_stream', '-', '+', 2)->shouldHaveBeenCalled();
         $redis->xRange('second_stream', '-', '+', 2)->shouldNotHaveBeenCalled();
     }
+
+    function it_reads_in_reversed_order_stream_entries_matching_given_range_of_ids(Redis $redis)
+    {
+        $redis->xRevRange(Argument::cetera())->willReturn([]);
+        $this->beConstructedWith($redis, [new Stream('first_stream'), new Stream('second_stream')]);
+
+        $result = $this->readReversedRange(new IdsRange('-', '+'), 2);
+
+        $result->shouldBeArray();
+        $redis->xRevRange('first_stream', '+', '-', 2)->shouldHaveBeenCalled();
+        $redis->xRevRange('second_stream', '+', '-', 2)->shouldNotHaveBeenCalled();
+    }
 }
