@@ -12,6 +12,11 @@ $number = $argv[2] ?? 1;
 $client = Client::connect('redis');
 $stream = new Stream($streamName);
 
+$entries = [];
 for ($i = 0; $i < $number; $i++) {
-    $client->to($stream)->add(Entry::compose(['iteration' => $i + 1]));
+    $entries[] = Entry::compose(['iteration' => $i + 1]);
 }
+
+$lastEntryId = $client->to($stream)->add($entries);
+
+printf("There are now a total of %d entries\n", $client->numberOfEntries($stream));
