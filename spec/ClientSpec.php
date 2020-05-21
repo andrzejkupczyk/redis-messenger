@@ -7,6 +7,7 @@ use Prophecy\Argument;
 use Redis;
 use WebGarden\Messaging\Client;
 use WebGarden\Messaging\Redis\Consumer;
+use WebGarden\Messaging\Redis\Entry;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 
@@ -110,6 +111,18 @@ class ClientSpec extends ObjectBehavior
         $result = $this->numberOfEntries($stream);
 
         $redis->xLen('name')->shouldHaveBeenCalled();
+        $result->shouldBeInt();
+    }
+
+    function it_removes_the_specified_entries_from_a_stream(Redis $redis)
+    {
+        $stream = new Stream('name');
+        $redis->xDel(Argument::cetera())->willReturn(1);
+        $this->beConstructedWith($redis);
+
+        $result = $this->removeEntries($stream, new Entry('0-1', []), new Entry('0-2', []));
+
+        $redis->xDel('name', ['0-1', '0-2'])->shouldHaveBeenCalled();
         $result->shouldBeInt();
     }
 

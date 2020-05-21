@@ -3,6 +3,7 @@
 namespace WebGarden\Messaging;
 
 use Redis;
+use WebGarden\Messaging\Redis\Entry;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 
@@ -38,6 +39,18 @@ trait StreamManagement
     public function numberOfEntries(Stream $stream): int
     {
         return $this->redis->xLen($stream->name());
+    }
+
+    /**
+     * @see https://redis.io/commands/xdel
+     *
+     * @return int The number of entries actually deleted
+     */
+    public function removeEntries(Stream $stream, Entry ...$entries): int
+    {
+        $ids = array_map(fn(Entry $entry) => $entry->id(), $entries);
+
+        return $this->redis->xDel($stream->name(), $ids);
     }
 
     /**
