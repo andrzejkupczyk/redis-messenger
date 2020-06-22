@@ -18,7 +18,7 @@ class Writer
         $this->stream = $stream;
     }
 
-    public function add(Entry ...$entries): string
+    public function add(Entry ...$entries): ?string
     {
         $lastEntryId = null;
 
