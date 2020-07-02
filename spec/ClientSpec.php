@@ -69,12 +69,12 @@ class ClientSpec extends ObjectBehavior
     function it_returns_entire_state_of_the_stream(Redis $redis)
     {
         $stream = new Stream('name');
-        $redis->rawCommand(Argument::cetera())->willReturn([]);
+        $redis->xInfo(Argument::cetera())->willReturn([]);
         $this->beConstructedWith($redis);
 
         $result = $this->fullInformation($stream, 0);
 
-        $redis->rawCommand('XINFO', 'STREAM', 'name', 'FULL', 'COUNT', 0)->shouldHaveBeenCalled();
+        $redis->xInfo('STREAM', 'name', 'FULL', 0)->shouldHaveBeenCalled();
         $result->shouldBeArray();
     }
 

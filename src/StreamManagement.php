@@ -18,9 +18,7 @@ trait StreamManagement
 
     public function fullInformation(Stream $stream, int $count = 10): array
     {
-        $arguments = ['STREAM', $stream->name(), 'FULL', 'COUNT', $count];
-
-        return $this->redis->rawCommand('XINFO', ...$arguments);
+        return $this->redis->xInfo('STREAM', $stream->name(), 'FULL', $count);
     }
 
     public function consumers(Group $group): array
