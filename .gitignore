@@ -1,6 +1,7 @@
-.idea
 .php_cs.cache
-coverage
+/.idea
+/coverage
+/tools
+/vendor
+composer.lock
 phive.phar.asc
-tools
-vendor

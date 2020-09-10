@@ -60,4 +60,9 @@ trait StreamManagement
     {
         return $this->redis->xTrim($stream->name(), $maxLength, true);
     }
+
+    public function streamExists(Stream $stream): bool
+    {
+        return (bool) $this->redis->exists($stream->name());
+    }
 }

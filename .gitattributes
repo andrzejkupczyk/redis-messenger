@@ -1,0 +1,8 @@
+.gitattributes      export-ignore
+.php_cs.dist        export-ignore
+.phpspec.yml        export-ignore
+docker              export-ignore
+docker-compose.yml  export-ignore
+examples            export-ignore
+spec                export-ignore
+phive.xml           export-ignore
