@@ -46,7 +46,7 @@ trait StreamManagement
      */
     public function removeEntries(Stream $stream, Entry ...$entries): int
     {
-        $ids = array_map(fn(Entry $entry) => $entry->id(), $entries);
+        $ids = array_map(fn (Entry $entry) => $entry->id(), $entries);
 
         return $this->redis->xDel($stream->name(), $ids);
     }

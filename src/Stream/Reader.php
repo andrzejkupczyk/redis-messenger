@@ -47,9 +47,12 @@ class Reader implements SpecialIdentities
      */
     public function readRange(IdsRange $range, ?int $limit = null): array
     {
-        $stream = array_key_first($this->streams);
+        $arguments = [array_key_first($this->streams), $range->from(), $range->to()];
+        if ($limit !== null) {
+            $arguments[] = $limit;
+        }
 
-        return $this->redis->xRange($stream, $range->from(), $range->to(), $limit);
+        return $this->redis->xRange(...$arguments);
     }
 
     /**
@@ -59,9 +62,12 @@ class Reader implements SpecialIdentities
      */
     public function readReversedRange(IdsRange $range, ?int $limit = null): array
     {
-        $stream = array_key_first($this->streams);
+        $arguments = [array_key_first($this->streams), $range->to(), $range->from()];
+        if ($limit !== null) {
+            $arguments[] = $limit;
+        }
 
-        return $this->redis->xRevRange($stream, $range->to(), $range->from(), $limit);
+        return $this->redis->xRevRange(...$arguments);
     }
 
     public function followFrom(string $id = self::PENDING_MESSAGES, int $timeout = 0): void
