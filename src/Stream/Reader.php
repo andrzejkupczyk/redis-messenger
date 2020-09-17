@@ -2,10 +2,12 @@
 
 namespace WebGarden\Messaging\Stream;
 
-use Evenement\EventEmitter;
-use Evenement\EventEmitterInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Redis;
 use RedisException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use WebGarden\Messaging\Events\ItemReceived;
+use WebGarden\Messaging\Events\TimeoutReached;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Entry;
 use WebGarden\Messaging\Redis\IdsRange;
@@ -14,23 +16,20 @@ use WebGarden\Messaging\Redis\Stream;
 
 class Reader implements SpecialIdentities
 {
-    public const ITEM_RECEIVED = 'reader.item_received';
-    public const TIMEOUT_REACHED = 'reader.timeout_reached';
-
     /** @var Stream[] List of stream objects indexed by their names */
     protected array $streams;
 
     protected Redis $redis;
 
-    protected EventEmitter $emitter;
+    protected EventDispatcherInterface $dispatcher;
 
     protected ?Consumer $consumer = null;
 
-    public function __construct(Redis $redis, array $streams, ?EventEmitterInterface $emitter = null)
+    public function __construct(Redis $redis, array $streams, ?EventDispatcherInterface $dispatcher = null)
     {
         $this->redis = $redis;
         $this->streams = array_combine(array_map('strval', $streams), $streams);
-        $this->emitter = $emitter ?: new EventEmitter();
+        $this->dispatcher = $dispatcher ?: new EventDispatcher();
     }
 
     public function as(Consumer $consumer): self
@@ -84,9 +83,9 @@ class Reader implements SpecialIdentities
         $this->follow($this->determineSpecialId(), $timeout);
     }
 
-    public function on($event, callable $listener): self
+    public function on(string $event, callable $listener): self
     {
-        $this->emitter->on($event, $listener);
+        $this->dispatcher->addListener($event, $listener);
 
         return $this;
     }
@@ -104,7 +103,10 @@ class Reader implements SpecialIdentities
             try {
                 $entries = $this->read($streams, $timeout);
             } catch (RedisException $exception) {
-                $this->emitter->emit(self::TIMEOUT_REACHED, [$currentTime() - $start]);
+                $this->dispatcher->dispatch(
+                    new TimeoutReached($currentTime() - $start),
+                    TimeoutReached::NAME
+                );
                 continue;
             }
 
@@ -118,11 +120,13 @@ class Reader implements SpecialIdentities
 
                 foreach ($streamEntries as $id => $values) {
                     $entry = new Entry($id, $values);
-                    $this->emitter->emit(self::ITEM_RECEIVED, [
-                        $entry,
-                        $this->streams[$key],
-                        $this->acknowledgeCallback($this->streams[$key], $entry),
-                    ]);
+                    $stream = $this->streams[$key];
+                    $acknowledge = $this->acknowledgeCallback($stream, $entry);
+
+                    $this->dispatcher->dispatch(
+                        new ItemReceived($entry, $stream, $acknowledge),
+                        ItemReceived::NAME
+                    );
                 }
             }
         } while (!$finiteLoop);

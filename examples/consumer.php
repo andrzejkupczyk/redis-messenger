@@ -3,9 +3,8 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use WebGarden\Messaging\Client;
-use WebGarden\Messaging\Stream\Reader;
+use WebGarden\Messaging\Events\{ItemReceived, TimeoutReached};
 use WebGarden\Messaging\Redis\Consumer;
-use WebGarden\Messaging\Redis\Entry;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
 
@@ -24,11 +23,11 @@ $client->createGroup($consumer->group());
 $client
     ->from(...$streams)
     ->as($consumer)
-    ->on(Reader::TIMEOUT_REACHED, function ($time) {
-        printf("Idle running for %01.3f seconds\n", $time / 1e+9);
+    ->on(TimeoutReached::NAME, function (TimeoutReached $event) {
+        printf("Idle running for %01.3f seconds\n", $event->elapsedTime / 1e+9);
     })
-    ->on(Reader::ITEM_RECEIVED, function (Entry $entry, Stream $stream, callable $acknowledge) {
-        printf("Received item %s from %s\n", $entry->id(), $stream);
-        $acknowledge();
+    ->on(ItemReceived::NAME, function (ItemReceived $event) {
+        printf("Received item %s from %s\n", $event->entry->id(), $event->stream);
+        call_user_func($event->acknowledge);
     })
     ->followFrom($from);

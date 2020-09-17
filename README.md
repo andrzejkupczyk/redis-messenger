@@ -27,14 +27,15 @@ $client
 ### Consuming messages
 ```php
 use WebGarden\Messaging\Client;
-use WebGarden\Messaging\Redis\{Entry,Stream};
+use WebGarden\Messaging\Redis\Stream;
+use WebGarden\Messaging\Events\ItemReceived;
 
 $client = Client::connect('redis');
 
 $client
     ->from(new Stream('mystream'))
-    ->on('reader.item_received', function (Entry $entry) {
-        printf("Received item %s\n", $entry->id());
+    ->on('reader.item_received', function (ItemReceived $event) {
+        printf("Received item %s\n", $event->entry->id());
     })
     ->followNewEntries();
 ```

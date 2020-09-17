@@ -2,11 +2,13 @@
 
 namespace spec\WebGarden\Messaging\Stream;
 
-use Evenement\EventEmitter;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Redis;
 use WebGarden\Messaging\Redis\{Consumer, Entry, IdsRange, Stream};
+use WebGarden\Messaging\Events\ItemReceived;
+use WebGarden\Messaging\Events\TimeoutReached;
 use WebGarden\Messaging\Stream\Reader;
 
 class ReaderSpec extends ObjectBehavior
@@ -73,30 +75,33 @@ class ReaderSpec extends ObjectBehavior
         $redis->xReadGroup('group', 'consumer', ['stream' => '>'], 0, 0)->shouldHaveBeenCalled();
     }
 
-    function it_emits_an_event_when_redis_exception_is_thrown(Redis $redis, EventEmitter $emitter)
+    function it_emits_an_event_when_redis_exception_is_thrown(Redis $redis, EventDispatcher $dispatcher)
     {
+        $dispatcher->dispatch(Argument::cetera())->willReturn(new \stdClass());
         $redis->xRead(Argument::cetera())->willThrow('RedisException');
-        $this->beConstructedWith($redis, [new Stream('stream')], $emitter);
+        $this->beConstructedWith($redis, [new Stream('stream')], $dispatcher);
 
         $this->followFrom('0-0');
 
-        $emitter->emit('reader.timeout_reached', Argument::type('array'))->shouldHaveBeenCalled();
+        $dispatcher->dispatch(
+            Argument::type(TimeoutReached::class),
+            TimeoutReached::NAME
+        )->shouldHaveBeenCalled();
     }
 
-    function it_emits_an_event_when_receives_an_item_from_the_stream(Redis $redis, EventEmitter $emitter)
+    function it_emits_an_event_when_receives_an_item_from_the_stream(Redis $redis, EventDispatcher $dispatcher)
     {
+        $dispatcher->dispatch(Argument::cetera())->willReturn(new \stdClass());
         $redisResponse = ['stream' => ['0-0' => ['foo' => 'bar'], '0-1' => ['baz' => 'qux']]];
         $redis->xRead(Argument::cetera())->willReturn($redisResponse);
-        $this->beConstructedWith($redis, [new Stream('stream')], $emitter);
+        $this->beConstructedWith($redis, [new Stream('stream')], $dispatcher);
 
         $this->followFrom('0-0');
 
-        $emitter->emit('reader.item_received', Argument::that(function ($argument) {
-            return count($argument) === 3
-                && $argument[0] instanceof Entry
-                && $argument[1] instanceof Stream
-                && is_callable($argument[2]);
-        }))->shouldHaveBeenCalledTimes(2);
+        $dispatcher->dispatch(
+            Argument::type(ItemReceived::class),
+            ItemReceived::NAME
+        )->shouldHaveBeenCalledTimes(2);
     }
 
     function it_reads_stream_entries_matching_given_range_of_ids(Redis $redis)
