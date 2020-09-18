@@ -18,6 +18,9 @@
         "phpspec/phpspec": "^6.1",
         "friends-of-phpspec/phpspec-code-coverage": "^4.3"
     },
+    "suggest": {
+        "illuminate/redis": "Simplifies integration with Lumen framework"
+    },
     "autoload": {
         "psr-4": {
             "WebGarden\\Messaging\\": "src/"
@@ -31,6 +34,14 @@
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "aliases": {
+                "RedisMessenger": "WebGarden\\Messaging\\Laravel\\Facade"
+            },
+            "providers": [
+                "WebGarden\\Messaging\\Laravel\\ServiceProvider"
+            ]
         }
     }
 }
