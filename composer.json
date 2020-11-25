@@ -9,13 +9,17 @@
             "homepage": "https://andrzejkupczyk.pl"
         }
     ],
+    "support": {
+        "issues": "https://github.com/andrzejkupczyk/redis-messenger/issues"
+    },
     "require": {
-        "php": "^7.4",
+        "php": "^7.4|^8.0",
         "ext-redis": "*",
         "symfony/event-dispatcher": "^5.1"
     },
     "require-dev": {
-        "phpspec/phpspec": "^6.1",
+        "phpspec/phpspec": "^6.3",
+        "illuminate/redis": "^8.16",
         "friends-of-phpspec/phpspec-code-coverage": "^4.3"
     },
     "suggest": {

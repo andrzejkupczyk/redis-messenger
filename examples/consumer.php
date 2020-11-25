@@ -3,7 +3,8 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use WebGarden\Messaging\Client;
-use WebGarden\Messaging\Events\{ItemReceived, TimeoutReached};
+use WebGarden\Messaging\Events\ItemReceived;
+use WebGarden\Messaging\Events\TimeoutReached;
 use WebGarden\Messaging\Redis\Consumer;
 use WebGarden\Messaging\Redis\Group;
 use WebGarden\Messaging\Redis\Stream;
@@ -12,9 +13,7 @@ $streamNames = explode(',', $argv[1] ?? 'stream');
 $from = $argv[2] ?? '0';
 
 $client = Client::connect('redis');
-$streams = array_map(function ($name) {
-    return new Stream($name);
-}, $streamNames);
+$streams = array_map(fn ($name) => new Stream($name), $streamNames);
 
 $consumer = new Consumer(new Group('consumer_group', $streams[0]));
 
